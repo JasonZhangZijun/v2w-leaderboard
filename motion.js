@@ -207,6 +207,7 @@
     });
   }
 
-  const start = () => { initCursor(); initHeader(); initSectionRail(); initFlow(); initAnchors(); };
+  // cursor follower switched off on the leaderboard pages (2026-10-18); initCursor stays for reuse
+  const start = () => { initHeader(); initSectionRail(); initFlow(); initAnchors(); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
