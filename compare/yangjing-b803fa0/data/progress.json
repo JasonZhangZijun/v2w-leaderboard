@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "note": "Model lines for the progress view, in version order (release dates are not recorded in the snapshot). Example frames are each version's own verified success on a task where a clip exists; tasks differ between versions.",
+  "lines": [
+    { "id": "claude-opus", "name": "Claude Opus", "provider": "Anthropic", "models": ["opus-5", "opus-5-5"] },
+    { "id": "gpt-sol", "name": "OpenAI GPT", "provider": "OpenAI", "models": ["gpt-5-6-sol", "gpt-6-astra", "gpt-6-1-sol"] }
+  ],
+  "examples": {
+    "opus-5": { "poster": "assets/cases/tape-opus5.webp", "video": "assets/cases/tape-opus5.mp4", "task": "Tape on the plate" },
+    "opus-5-5": { "poster": "assets/cases/opus55/01_droid_orange_pick_place/opus55_success_sim.webp", "video": "assets/cases/opus55/01_droid_orange_pick_place/opus55_success_sim.mp4", "task": "Pick-and-place" },
+    "gpt-6-astra": { "poster": "assets/cases/carton-gpt6astra.webp", "video": "assets/cases/carton-gpt6astra.mp4", "task": "Carton into bowl" },
+    "gpt-6-1-sol": { "poster": "assets/cases/frontier/fbraw_2023-01-26-00_00_38_desk_leg2/gpt-6-1-sol.webp", "video": "assets/cases/frontier/fbraw_2023-01-26-00_00_38_desk_leg2/gpt-6-1-sol.mp4", "task": "Desk leg insertion" }
+  }
+}
