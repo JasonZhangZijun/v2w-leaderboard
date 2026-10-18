@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "title": "Video2World News",
+  "entries": [
+    {
+      "id": "opus-5-5",
+      "title": "Opus 5.5: 52.41 V2WScore, 33.6% task success",
+      "summary": "The refreshed 222-instance snapshot leads on task success, progress and build rate. Explore component metrics and five selected execution cases.",
+      "date": "2026-10-17",
+      "date_label": "Snapshot as of",
+      "status": "published",
+      "kind": "model_result",
+      "model_id": "opus-5-5",
+      "href": "updates/opus-5-5.html",
+      "image": "assets/opus-5-5-social.png",
+      "snapshot_id": "v2-published-2026-10-17",
+      "cover": "assets/cases/opus55/01_droid_orange_pick_place/report-cover.webp",
+      "cover_alt": "Claude Opus 5.5 simulation: the robot arm lifts the red block off the table (pick-and-place, verified case)."
+    },
+    {
+      "id": "gpt-6-1-sol",
+      "title": "GPT-6.1 Sol: 41.19 V2WScore",
+      "summary": "91.0% build rate and 10.9% task success in the published 222-instance snapshot. Inspect geometric fidelity and remaining execution gaps.",
+      "date": "2026-10-17",
+      "date_label": "Snapshot as of",
+      "status": "published",
+      "kind": "model_result",
+      "model_id": "gpt-6-1-sol",
+      "href": "updates/gpt-6-1-sol.html",
+      "image": "assets/gpt-6-1-sol-social.png",
+      "snapshot_id": "v2-published-2026-10-17"
+    },
+    {
+      "id": "meta-muse",
+      "title": "Muse Wonder: 27.90 V2WScore",
+      "summary": "86.7% build rate and 2.8% task success. The report examines executability, physical fidelity and diagnostic limits.",
+      "date": "2026-10-17",
+      "date_label": "Snapshot as of",
+      "status": "published",
+      "kind": "model_result",
+      "model_id": "meta-muse",
+      "href": "updates/meta-muse.html",
+      "image": "assets/meta-muse-social.png",
+      "snapshot_id": "v2-published-2026-10-17"
+    }
+  ],
+  "campaign": {
+    "id": "frontier-four-2026-10",
+    "title": "Four flagship models. One benchmark.",
+    "description": "A joint comparison of Claude Opus 5.5, Gemini 4 Argon, Meta Muse Wonder and GPT-6.1 Sol, supported by model reports and verified executions.",
+    "status": "testing",
+    "model_ids": [
+      "opus-5-5",
+      "gemini-4-argon",
+      "meta-muse",
+      "gpt-6-1-sol"
+    ],
+    "release_rule": "Publish the joint comparison after all four results are verified on a compatible protocol.",
+    "roundup_href": null,
+    "publication_status": "in_preparation",
+    "publication_note": "Three model reports are available. Gemini 4 Argon remains in testing; the joint blog is in preparation."
+  }
+}
