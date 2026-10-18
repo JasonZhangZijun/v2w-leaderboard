@@ -285,44 +285,41 @@
   function lastUpdated(){return `Last updated · ${new Date(`${state.board.snapshot_date}T00:00:00Z`).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'})}`;}
   function renderLatest(){
     const best=[...state.board.models].sort((a,b)=>b.metrics.score-a.metrics.score)[0];
-    $('#release-title').textContent=best.name;
     const highlight=$('.release-highlight');
-    highlight.querySelectorAll('a').forEach(a=>{a.setAttribute('href',path(`updates/${best.id}.html`));a.setAttribute('aria-label',`Read ${best.name} results`);});
-    const values=highlight.querySelectorAll('.metric-value');
-    values[0].textContent=format(best.metrics.score,'score');values[1].innerHTML=`${format(best.metrics.success,'success')}<span>%</span>`;
-    values[2].innerHTML=`${format(best.metrics.build,'build')}<span>%</span>`;
-    highlight.querySelectorAll('.metric-name')[2].textContent='Build rate';
+    if(highlight){
+      $('#release-title').textContent=best.name;
+      highlight.querySelectorAll('a').forEach(a=>{a.setAttribute('href',path(`updates/${best.id}.html`));a.setAttribute('aria-label',`Read ${best.name} results`);});
+      const values=highlight.querySelectorAll('.metric-value');
+      values[0].textContent=format(best.metrics.score,'score');values[1].innerHTML=`${format(best.metrics.success,'success')}<span>%</span>`;
+      values[2].innerHTML=`${format(best.metrics.build,'build')}<span>%</span>`;
+      highlight.querySelectorAll('.metric-name')[2].textContent='Build rate';
+    }
     const count=$$('.benchmark-stats dt')[2];if(count)count.textContent=state.board.models.length;
     $('#snapshot-date').textContent=lastUpdated();
     renderNews();renderCampaign();
   }
   function renderNews(){
     const published=state.news.entries.filter(n=>n.status==='published').sort((a,b)=>b.date.localeCompare(a.date));
+    const rowFor=entry=>state.board.models.find(m=>m.id===entry.model_id);
+    const latest=$('#latest-model-news');
+    if(latest){
+      const modelReports=published.filter(entry=>entry.kind==='model_result').slice(0,4);
+      latest.innerHTML=modelReports.map(entry=>{
+        const row=rowFor(entry),name=row?.name||entry.title;
+        const date=new Date(`${entry.date}T00:00:00Z`).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'});
+        const finding=row?`${format(row.metrics.score,'score')} V2WScore · ${format(row.metrics.success,'success',true)} task success · ${format(row.metrics.build,'build',true)} build rate`:entry.summary;
+        return `<a class="model-news-row" data-news-id="${esc(entry.id)}" data-model="${esc(entry.model_id)}" href="${path(entry.href)}" aria-label="Read ${esc(name)} evaluation report"><time class="model-news-date" datetime="${esc(entry.date)}"><span class="model-news-date-label">${esc(entry.date_label||'Published')}</span>${esc(date)}</time><span class="model-news-name">${esc(name)}</span><span class="model-news-finding">${esc(finding)}</span><span class="model-news-arrow" aria-hidden="true">↗</span></a>`;
+      }).join('');
+    }
+    const pending=$('#pending-model-news');
+    if(pending){
+      pending.hidden=!state.board.pending_models.length;
+      pending.innerHTML=state.board.pending_models.map(model=>`<span class="pending-model-item"><span class="pending-model-name">${esc(model.name)}</span><span class="pending-model-status">Coming soon</span></span>`).join('');
+    }
     const grid=$('.updates-grid');
-    if(grid&&grid.dataset.layout==='bento'){renderReportsBento(grid,published);}
-    else if(grid)grid.innerHTML=published.map(n=>`<a href="${path(n.href)}" class="update-card featured-update"><div class="update-top"><span class="release-tag">${n.kind==='roundup'?'JOINT ANALYSIS':'MODEL REPORT'}</span><span>${esc(n.date_label||'Published')} · ${esc(n.date)}</span></div><h3>${esc(n.title)}</h3><p>${esc(n.summary)}</p><div class="update-bottom"><span>Read the report</span><span>↗</span></div></a>`).join('')+state.board.pending_models.map(m=>`<a href="${path(`updates/${m.id}.html`)}" class="update-card upcoming-update"><div class="update-top"><span class="testing-tag"><span class="status-dot"></span>TESTING</span><span>${esc(m.provider)}</span></div><h3>${esc(m.name)}</h3><p>Results pending. The report will examine task completion, build reliability, physical fidelity and verified case evidence.</p><div class="update-bottom"><span>View testing status</span><span>↗</span></div></a>`).join('');
-    const summary=$('#nav-news-summary');if(summary&&published[0])summary.innerHTML=`<span class="news-nav-kicker">LATEST REPORT</span><a href="${path(published[0].href)}">${esc(published[0].title)} <span>↗</span></a><a class="news-nav-all" href="${path('news/index.html')}">All four model reports & testing progress →</a>`;
-  }
-  // Home: feature the latest published report, then retain every other measured model report
-  // beside the models still being tested. A new result never displaces an earlier report.
-  function renderReportsBento(grid,published){
-    const fmtDate=d=>new Date(`${d}T00:00:00Z`).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'});
-    const monoLogo={Google:'gemini-mono',Meta:'meta-mono',OpenAI:'openai-mono',Anthropic:'claude-color'};
-    const rowFor=entry=>state.board.models.find(m=>m.id===(entry.model_id||(entry.href.match(/updates\/([^/]+)\.html$/)||[])[1]));
-    const logo=provider=>`<span class="bento-logo" aria-hidden="true">${monoLogo[provider]?`<i style="--logo:url('${esc(path(`assets/logos/${monoLogo[provider]}.svg`))}')"></i>`:esc((provider||'').slice(0,1))}</span>`;
-    const reportDate=entry=>`${esc(entry.date_label||'Report date')} · ${esc(fmtDate(entry.date))}`;
-    const featured=published[0];
-    const card=featured?(()=>{
-      const row=rowFor(featured);
-      const line=featured.title.includes(':')?featured.title.split(':').slice(1).join(':').trim():featured.summary;
-      return `<a class="update-card featured-update bento-featured" href="${path(featured.href)}">${featured.cover?`<span class="bento-cover"><img src="${esc(path(featured.cover))}" alt="${esc(featured.cover_alt||'')}" loading="lazy" decoding="async"></span>`:''}<span class="bento-featured-body"><span class="bento-row"><span class="tiny-label">${featured.kind==='roundup'?'Joint analysis':'Featured report'} / ${reportDate(featured)}</span><span class="bento-state is-published"><i></i>Published</span></span><span class="bento-split"><span class="bento-id"><strong class="bento-name">${esc(row?.name||featured.title)}</strong><span class="bento-line">${esc(line)}</span></span>${row?`<span class="bento-metrics"><span><b>${format(row.metrics.score,'score')}</b><small>V2WScore</small></span><span><b>${format(row.metrics.success,'success',true)}</b><small>Success</small></span><span class="bento-read">Read report ↗</span></span>`:'<span class="bento-metrics"><span class="bento-read">Read ↗</span></span>'}</span></span></a>`;
-    })():'';
-    const secondary=published.slice(1).map(entry=>{
-      const row=rowFor(entry);
-      return `<a class="update-card featured-update bento-secondary" href="${path(entry.href)}"><span class="bento-up-main">${logo(row?.provider)}<strong>${esc(row?.name||entry.title)}</strong><span class="bento-report-arrow" aria-hidden="true">↗</span></span><span class="tiny-label bento-report-date">${reportDate(entry)}</span><p>${esc(entry.summary||entry.title)}</p>${row?`<span class="bento-secondary-metrics"><span><b>${format(row.metrics.score,'score')}</b> V2WScore</span><span><b>${format(row.metrics.success,'success',true)}</b> task success</span></span>`:''}<span class="bento-secondary-read">Read report <span aria-hidden="true">↗</span></span></a>`;
-    }).join('');
-    const pending=state.board.pending_models.map(m=>`<div class="update-card upcoming-update bento-upcoming" data-report="${path(`updates/${m.id}.html`)}"><span class="bento-up-main">${logo(m.provider)}<strong>${esc(m.name)}</strong><span class="tiny-label">${esc(m.provider)}</span></span><span class="bento-soon" aria-disabled="true" title="Results are still being verified">Test results <em>Coming soon</em></span><span class="sr-only">Testing · results pending verification</span></div>`).join('');
-    grid.innerHTML=`${card}<div class="bento-report-stack">${secondary?`<div class="bento-secondary-list"><div class="bento-row"><span class="tiny-label">More model reports</span><span class="bento-state is-published"><i></i>Results available</span></div>${secondary}</div>`:''}${pending?`<div class="bento-upcoming-list"><div class="bento-row"><span class="tiny-label">Upcoming reports</span><span class="bento-state"><i></i>Testing</span></div>${pending}</div>`:''}${!secondary&&!pending?'<p class="bento-empty">All available model reports are shown.</p>':''}</div>`;
+    if(grid)grid.innerHTML=published.map(n=>`<a href="${path(n.href)}" class="update-card featured-update"><div class="update-top"><span class="release-tag">${n.kind==='roundup'?'JOINT ANALYSIS':'MODEL REPORT'}</span><span>${esc(n.date_label||'Published')} · ${esc(n.date)}</span></div><h3>${esc(n.title)}</h3><p>${esc(n.summary)}</p><div class="update-bottom"><span>Read the report</span><span>↗</span></div></a>`).join('')+state.board.pending_models.map(m=>`<a href="${path(`updates/${m.id}.html`)}" class="update-card upcoming-update"><div class="update-top"><span class="testing-tag"><span class="status-dot"></span>TESTING</span><span>${esc(m.provider)}</span></div><h3>${esc(m.name)}</h3><p>Results pending. The report will examine task completion, build reliability, physical fidelity and verified case evidence.</p><div class="update-bottom"><span>View testing status</span><span>↗</span></div></a>`).join('');
+    const summary=$('#nav-news-summary');
+    if(summary)summary.innerHTML=`<span class="news-nav-kicker">MODEL EVALUATION UPDATES</span>${published.slice(0,4).map(entry=>`<a class="news-nav-report" href="${path(entry.href)}">${esc(rowFor(entry)?.name||entry.title)} <span aria-hidden="true">↗</span></a>`).join('')}<a class="news-nav-all" href="${path('news/index.html')}">All news & model reports →</a>`;
   }
   function renderCampaign(){
     const campaign=state.news.campaign;
@@ -332,7 +329,7 @@
     const complete=rows.filter(r=>r.metrics!=null).length;
     $('#campaign-status').textContent=`${complete} of ${campaign.model_ids.length} results available`;
     const roundup=state.news.entries.find(n=>n.kind==='roundup'&&n.status==='published'&&n.href===campaign.roundup_href);
-    const message=$('#campaign-message');if(message)message.textContent=roundup?'The joint comparison is published. Read it alongside the individual model reports.':complete===campaign.model_ids.length?'All four result rows are available. The joint article will follow after protocol and evidence review.':'Claude, Gemini, Muse and GPT: the joint comparison and blog will follow once all four results are verified on a compatible protocol.';
+    const message=$('#campaign-message');if(message)message.textContent=roundup?'The joint comparison is published. Read it alongside the individual model reports.':complete===campaign.model_ids.length?'All four result rows are available. The joint article will follow after protocol and evidence review.':'Claude, Gemini, Muse and GPT: the four-model comparison will follow once all results are verified on a compatible protocol.';
     const publication=$('#campaign-publication');if(publication)publication.innerHTML=roundup?`<a class="text-link" href="${esc(path(roundup.href))}">Read the joint analysis ↗</a>`:esc(campaign.publication_note||'Joint article in preparation.');
   }
 

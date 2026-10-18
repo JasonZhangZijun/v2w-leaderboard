@@ -58,6 +58,6 @@
     "release_rule": "Publish the joint comparison after all four results are verified on a compatible protocol.",
     "roundup_href": null,
     "publication_status": "in_preparation",
-    "publication_note": "Three model reports are available. Gemini 4 Argon remains in testing; the joint blog is in preparation."
+    "publication_note": "Three model reports are available. Gemini 4 Argon remains in testing; the four-model comparison is in preparation. The methodology blog is a separate technical report."
   }
 }
