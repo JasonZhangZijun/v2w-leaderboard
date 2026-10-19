@@ -271,12 +271,25 @@
       root.classList.remove('is-playing');
       bindVideoFallbacks();
     };
-    root.innerHTML=`${head}<div class="cs-gallery"><div class="cs-library-head"><span class="eyebrow">Source video library</span><a class="cs-all" href="${path('news/index.html')}">All model reports <span aria-hidden="true">↗</span></a></div><div class="cs-library" style="--case-columns:${Math.min(5,list.length)}" role="tablist" aria-label="Choose a source video">${list.map((c,i)=>`<button class="cs-thumb" id="frontier-tab-${i}" type="button" role="tab" aria-selected="false" aria-controls="frontier-case-panel" data-case-thumb="${i}" aria-label="Case ${num(i)}: ${esc(c.title)}"><span class="cs-thumb-media"><img src="${esc(path(c.source.poster))}" alt="" loading="lazy"><span class="cs-thumb-play" aria-hidden="true"></span></span><span class="cs-thumb-label"><span>${esc(c.dataset||c.family)}</span>${esc(c.title)}</span></button>`).join('')}</div></div><div class="cs-detail" id="frontier-case-panel" role="tabpanel"></div>`;
+    root.innerHTML=`${head}<div class="cs-gallery"><div class="cs-library-head"><span class="eyebrow">Source video library</span><a class="cs-all" href="#updates">All model reports <span aria-hidden="true">↗</span></a></div><div class="cs-library" style="--case-columns:${Math.min(5,list.length)}" role="tablist" aria-label="Choose a source video">${list.map((c,i)=>`<button class="cs-thumb" id="frontier-tab-${i}" type="button" role="tab" aria-selected="false" aria-controls="frontier-case-panel" data-case-thumb="${i}" aria-label="Case ${num(i)}: ${esc(c.title)}"><span class="cs-thumb-media"><img src="${esc(path(c.source.poster))}" alt="" loading="lazy"><span class="cs-thumb-play" aria-hidden="true"></span></span><span class="cs-thumb-label"><span>${esc(c.dataset||c.family)}</span>${esc(c.title)}</span></button>`).join('')}</div></div><div class="cs-detail" id="frontier-case-panel" role="tabpanel"></div>`;
     $$('#opus-case-explorer .cs-thumb').forEach((t,i)=>t.addEventListener('click',()=>select(i)));
     select(0);
   }
   async function initHome(){
-    renderProviders();renderTable();if($('#case-tabs'))renderCase();renderLatest();await initVerifiedCases();
+    // first screen = title + Model News: the news section takes the height left under the title
+    // Title + Model News form the first screen: their content is centred in the height under
+    // the navigation (equal room above the title and below the news), so the next section starts
+    // below the fold and nothing is crammed on tall screens.
+    const intro=$('.leaderboard-intro'),news=$('#updates'),rootStyle=document.documentElement?.style;
+    const fitIntro=()=>{
+      if(!intro||!news||!rootStyle?.setProperty||!globalThis.innerHeight)return;
+      rootStyle.setProperty('--first-pad','0px');
+      const nav=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'))||96;
+      const free=globalThis.innerHeight-nav-intro.offsetHeight-news.offsetHeight;
+      rootStyle.setProperty('--first-pad',`${Math.max(0,Math.floor(free/2))}px`);
+    };
+    globalThis.addEventListener?.('resize',fitIntro);
+    renderProviders();renderTable();if($('#case-tabs'))renderCase();renderLatest();fitIntro();document.fonts?.ready?.then(fitIntro);await initVerifiedCases();
     $('#model-search').addEventListener('input',e=>{state.search=e.target.value;renderTable();});
     $('#snapshot-current')?.addEventListener('click',()=>setSnapshot('current'));$('#snapshot-paper')?.addEventListener('click',()=>setSnapshot('paper'));
     const viewNotes = {key:'',Geometry:'Does the initialized scene match the observed one? Scene, object shape and size.',Dynamics:'When it runs, does the object move as in the video? Terminal translation and rotation.',Functionality:'Does the task actually get done? Task success and stage progress.',all:'Every reported metric, including fixed-reference diagnostics and build rate.'};
@@ -361,7 +374,7 @@
     const feed=$('#news-feed');
     if(feed){feed.innerHTML=html;bindNewsCards(feed);}
     const summary=$('#nav-news-summary');
-    if(summary)summary.innerHTML=`<span class="news-nav-kicker">MODEL EVALUATION UPDATES</span>${models.slice(0,4).map(entry=>`<a class="news-nav-report" href="${esc(entry.detail==='brief'?path(`news/index.html#news=${entry.id}`):path(entry.href))}">${esc(state.board.models.find(m=>m.id===entry.model_id)?.name||entry.title)} <span aria-hidden="true">↗</span></a>`).join('')}<a class="news-nav-all" href="${path('news/index.html')}">All news & model reports →</a>`;
+    if(summary)summary.innerHTML=`<span class="news-nav-kicker">MODEL EVALUATION UPDATES</span>${models.slice(0,4).map(entry=>`<a class="news-nav-report" href="${esc(entry.detail==='brief'?path(`index.html#news=${entry.id}`):path(entry.href))}">${esc(state.board.models.find(m=>m.id===entry.model_id)?.name||entry.title)} <span aria-hidden="true">↗</span></a>`).join('')}`;
     if((location.hash||'').startsWith('#news='))openBrief(decodeURIComponent(location.hash.slice(6)));
   }
   // The homepage keeps the headline ticker and compact model-logo cards; execution videos

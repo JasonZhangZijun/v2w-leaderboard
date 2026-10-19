@@ -271,3 +271,8 @@
 .has-flow .section-heading[data-flow] {
   filter: blur(calc((1 - var(--in, 1)) * 8px + var(--out, 0) * 3px));
 }
+/* The labels only fit in the left margin on wide windows (content starts at (100vw - 1320px) / 2);
+   below that the rail keeps its markers and drops the names so it never covers the text. */
+@media (max-width: 1679px) {
+  .section-rail .section-rail-label { display: none; }
+}

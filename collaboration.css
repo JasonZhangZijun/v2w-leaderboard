@@ -240,8 +240,8 @@ body[data-model-status="testing"] .model-hero { grid-template-columns: minmax(0,
 .board-context { flex-wrap: wrap; }
 .paper-results-link { margin-left: auto; font-size: var(--fs-ui); }
 @media (max-width: 1023px) {
-  body[data-page="model"] .site-header nav > a[href="../news/index.html"],
-  body[data-page="opus"] .site-header nav > a[href="../news/index.html"] { display: inline-flex; }
+  body[data-page="model"] .site-header nav > a[href="../index.html#updates"],
+  body[data-page="opus"] .site-header nav > a[href="../index.html#updates"] { display: inline-flex; }
 }
 
 /* Finding cards (model reports): four across, cut corner, mono label + dot glyph, text, then a
@@ -1739,4 +1739,54 @@ a.nh-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px;
 }
 @media (min-width: 761px) and (max-width: 1199px) {
   #cases .cs-frontier-runs .cs-frame { aspect-ratio: 4 / 3; height: auto; }
+}
+/* Home first screen (2026-10-19): more air around the title and the news; the news section
+   fills the rest of the screen so the next section starts below the fold. */
+@media (min-width: 901px) {
+  .leaderboard-intro { padding-top: 36px; padding-bottom: 32px; }
+  #updates.model-news-section { min-height: calc(100svh - var(--nav-height) - var(--intro-h, 200px)); padding-bottom: 48px; box-sizing: border-box; }
+  #updates .nh-masthead { padding: 14px 0 13px; }
+  #updates .nh-ticker { margin-top: 18px; }
+  #updates .news-home > :not(.nh-ticker) { margin-top: 30px; }
+  #updates + #leaderboard { padding-top: var(--space-section); }
+}
+@media (min-width: 901px) {
+  #updates.model-news-section { min-height: 0; padding-bottom: calc(40px + var(--first-pad, 0px)); }
+  .leaderboard-intro { padding-top: calc(28px + var(--first-pad, 0px)); }
+}
+@media (min-width: 901px) { body[data-page="home"] main > section#updates.model-news-section { padding-bottom: calc(40px + var(--first-pad, 0px)); } }
+/* Model News with more breathing room (2026-10-19): roomier masthead, ticker and cards,
+   wider gutters; small type raised to the token scale */
+@media (min-width: 901px) {
+  #updates .nh-masthead { padding: 20px 0 18px; }
+  #updates .nh-ticker { margin-top: 26px; }
+  #updates .news-home > :not(.nh-ticker) { margin-top: 36px; }
+  #updates .nh-list { gap: 24px; }
+  #updates .nh-item { padding: 30px 28px 26px; border-radius: 16px; }
+  #updates .nh-story-brand { margin-bottom: 26px; }
+  #updates .nh-item > strong { font-size: var(--fs-h3); line-height: 1.25; }
+  #updates .nh-item-dek { margin-top: 14px; font-size: var(--fs-small); line-height: 1.65; }
+  #updates .nh-item .nc-stats { margin-top: 26px; padding-top: 18px; gap: 12px; }
+  #updates .nh-item .nc-stats small { font-size: var(--fs-label); }
+  #updates .nh-item-cta { margin-top: 20px; }
+}
+@media (min-width: 901px) { #updates .nh-item .nc-stats small { font-size: var(--fs-micro); letter-spacing: .04em; white-space: nowrap; } }
+#updates .nh-masthead { grid-template-columns: 1fr; justify-items: center; }
+@media (max-width: 900px) { #updates .nh-masthead { grid-template-columns: 1fr; } #updates .nh-masthead h2 { text-align: center; } }
+/* Model News, quieter (2026-10-19): one hairline above the title like every other section
+   (no heavy black rule, no second rule below), and a light ticker without the black tag. */
+#updates .nh-masthead { border-top: 1px solid var(--line); border-bottom: 0; padding: 30px 0 4px; }
+#updates .nh-ticker { background: transparent; border-color: color-mix(in srgb, var(--line) 80%, transparent); }
+#updates .nh-ticker-tag { background: transparent; color: var(--accent); border-right: 1px solid var(--line); }
+/* LATEST tag: a soft brown chip in the site palette */
+#updates .nh-ticker-tag { background: var(--warm-tint); color: var(--warm-ink); border-right: 0; }
+#updates .nh-ticker-tag::before { background: var(--warm-solid); }
+/* responsive pass (2026-10-19): news card numbers fit on mid-width desktops; no type below 9px */
+.nh-item .nc-stats small { font-size: var(--fs-micro); }
+.nh-dot { font-size: 9px; }
+@media (min-width: 901px) and (max-width: 1399px) {
+  #updates .nh-item { padding: 24px 20px 22px; }
+  #updates .nh-item .nc-stats { gap: 8px; }
+  #updates .nh-item .nc-stats b { font-size: clamp(16px, 1.45vw, 21px); }
+  #updates .nh-item .nc-stats small { letter-spacing: .02em; }
 }
